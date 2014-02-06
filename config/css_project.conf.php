@@ -1,17 +1,16 @@
 <?php
 /**
- * combo¶¥¼¶±êÊ¶Â·¾¶ÅäÖÃ for css
+ * comboé¡¶çº§æ ‡è¯†è·¯å¾„é…ç½® for css
  */
 
 return array(
-    'm' => array(
-        'name' => 'm',
-        'path' => '/disk/data/htdocs233/mypoco/m/assets/css'
+    'project1' => array(
+        'name' => 'project1',
+        'path' => 'examples/project1/assets/css'
     ),
-    'mtest' => array(
-        'name' => 'mtest',
-        'path' => '/disk/data/htdocs233/mypoco/m/test/assets/css'
+    'project2' => array(
+        'name' => 'project2',
+        'path' => 'examples/project2/assets/css'
     )
 );
-
 ?>
