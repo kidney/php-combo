@@ -6,11 +6,11 @@
 return array(
     'seajs' => array(
         'name' => 'seajs',
-        'path' => 'examples/seajs'
+        'path' => 'examples/assets/js/seajs'
     ),
     'utility' => array(
         'name' => 'utility',
-        'path' => 'examples/utility'
+        'path' => 'examples/assets/js/utility'
     ),
     'project1' => array(
         'name' => 'project1',
