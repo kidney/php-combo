@@ -1,11 +1,23 @@
 <?php
-$last_modified_time = 0;
+/**
+ * 文本文件读取
+ */
 
-
-
+/**
+ * 引入文件
+ */
 $config_file_name = ($file_extension == 'js') ? 'script' : 'css';
-$project_cfg_arr = include_once('./config/'.$config_file_name.'_project.conf.php');
+$project_cfg_arr = require_once(G_COMBO_PATH.'config/'.$config_file_name.'_project.conf.php');
 
+
+/**
+ * 初始化
+ */
+
+
+/**
+ * 数据处理
+ */
 foreach ($files_arr as $key=>$temp_file_path) {
     // 获取文件类型，检查是否一样
     if ($key > 0) {
@@ -34,7 +46,7 @@ foreach ($files_arr as $key=>$temp_file_path) {
     }
     $result_arr[] = $tmp_content;
 
-    $last_modified_time = max($last_modified_time, filemtime($temp_file_full_path));
+    $last_modified_time = max((int)$last_modified_time, filemtime($temp_file_full_path));
 }
 
 $contents = "/*! cache: ".date('Y-m-d H:i:s')." */\n"; // 增加个cache的时间

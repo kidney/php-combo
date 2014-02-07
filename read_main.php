@@ -5,14 +5,13 @@
 /**
  * 定义常量
  */
-define('G_FILE_CACHE_DIST_PATH', './cache/');
 error_reporting(0);
 
 
 /**
  * 引入文件
  */
-require_once('./include/combo_func_common.inc.php');
+require_once('./combo_common.inc.php');
 
 
 /**
@@ -31,13 +30,14 @@ $G_HTTP_HEADER_CONTENT_TYPE_CFG = array(
 );
 $G_CACHE_LIFE_CYCLE = 3600 * 24 * 365; // 缓存生命周期
 
-$script_url = ltrim($_SERVER['SCRIPT_URL'], '/');
+$script_url = ltrim($_SERVER['SCRIPT_URL'], '/'); // ??前
 $request_uri = $_SERVER['REQUEST_URI'];
 
 if ($script_url == '' && $request_uri == '/') {
     combo_echo_error_header(403);
 }
 
+// 过滤非法传入
 if (preg_match('/[^a-zA-Z0-9\.\,\?\=\-\_\/~&]/', $request_uri)) {
     combo_echo_error_header(404);
 }
@@ -66,17 +66,18 @@ $deflate = strstr($http_accept_encoding, 'deflate');
 $encoding_type = $gzip ? 'gzip' : ($deflate ? 'deflate' : 'none');
 
 
-$file_name_hash = md5($request_uri_arr[0].'??'.$request_uri_arr[2]);
-$file_ver_hash = md5($request_uri_arr[3]); // 有时可能会是null
-
 $files_arr = explode(',', $request_uri_arr[2]); // 拆分每个文件, 下面循环读取
 
 // 获取文件类型
 $file_extension = combo_get_file_extension($files_arr[0]);
 
+// 结束非法的文件类型
 if (!isset($G_HTTP_HEADER_CONTENT_TYPE_CFG[$file_extension])) {
-    $file_extension = 'html';
+    combo_echo_error_header(404);
 }
+
+$file_name_hash = md5($request_uri_arr[0].'??'.$request_uri_arr[2]);
+$file_ver_hash = md5($request_uri_arr[3]).'.'.$file_extension; // 有时可能会是null
 
 $cache_file_full_path = G_FILE_CACHE_DIST_PATH.$file_name_hash.'/'.$file_ver_hash;
 $cache_filemtime = filemtime($cache_file_full_path);
@@ -110,9 +111,9 @@ if ($cache_filemtime !== false) {
         fpassthru($fp);
         fclose($fp);
         exit();
-    } else {
-        combo_echo_error_header(400);
     }
+
+    combo_echo_error_header(400);
 }
 
 
@@ -120,12 +121,12 @@ if ($cache_filemtime !== false) {
 switch ($file_extension) {
     case 'js':
     case 'css':
-        include_once('./read_text.php');
+        require_once(G_COMBO_PATH.'read_text.php');
         break;
     case 'png':
     case 'gif':
     case 'jpg':
-        include_once('./read_image.php');
+        require_once(G_COMBO_PATH.'read_image.php');
         break;
     default:
         combo_echo_error_header(403);

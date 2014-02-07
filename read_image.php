@@ -1,6 +1,17 @@
 <?php
-$project_cfg_arr = include_once('./config/image_project.conf.php');
+/**
+ * 图像文件读取
+ */
 
+/**
+ * 引入文件
+ */
+$project_cfg_arr = require_once(G_COMBO_PATH.'config/image_project.conf.php');
+
+
+/**
+ * 初始化
+ */
 $url_param = combo_unparam($request_uri_arr[3]);
 
 $layout = (string)$url_param['layout'];
@@ -8,12 +19,16 @@ if ($layout != 'horizontal') {
     $layout = 'vertical';
 }
 
-$images_identifier = array();
-$new_image_max_width = 0;
-$new_image_max_height = 0;
+$image_fragments = array(); // 图像碎片
+$new_image_max_width = 0; // 画板最大宽度
+$new_image_max_height = 0; // 画板最大高度
 
+
+/**
+ * 数据处理
+ */
 foreach ($files_arr as $key=>$temp_file_path) {
-    // 获取文件类型，检查是否一样
+    // 获取文件类型，检查其他文件是否一样
     if ($key > 0) {
         $tmp_file_extension = combo_get_file_extension($temp_file_path);
         if ($tmp_file_extension != $file_extension) {
@@ -38,6 +53,7 @@ foreach ($files_arr as $key=>$temp_file_path) {
         case 'png':
             $image = imagecreatefrompng($temp_file_full_path);
 
+            // 是否真彩色图像
             if (!isset($is_true_color)) {
                 $is_true_color = imageistruecolor($image);
             }
@@ -45,7 +61,9 @@ foreach ($files_arr as $key=>$temp_file_path) {
         case 'gif':
             $image = imagecreatefromgif($temp_file_full_path);
 
-            $is_true_color = false;
+            if (!isset($is_true_color)) {
+                $is_true_color = false;
+            }
             break;
         case 'jpg':
             $image = imagecreatefromjpeg($temp_file_full_path);
@@ -58,11 +76,12 @@ foreach ($files_arr as $key=>$temp_file_path) {
 
     $image_size = getimagesize($temp_file_full_path);
 
-    $images_identifier[] = array(
+    $image_fragments[] = array(
         'identifier' => $image,
         'size' => array('w' => (int)$image_size[0], 'h' => (int)$image_size[1])
     );
 
+    // 排列方式计算画板总宽高
     if ($layout == 'horizontal') {
         if ((int)$image_size[1] > $new_image_max_height) {
             $new_image_max_height = (int)$image_size[1];
@@ -75,7 +94,7 @@ foreach ($files_arr as $key=>$temp_file_path) {
         $new_image_max_height += (int)$image_size[1];
     }
 
-    $last_modified_time = max($last_modified_time, filemtime($temp_file_full_path));
+    $last_modified_time = max((int)$last_modified_time, filemtime($temp_file_full_path));
 }
 
 // 创建画板
@@ -107,7 +126,7 @@ switch ($file_extension) {
 
 $dst_x = 0;
 $dst_y = 0;
-foreach ($images_identifier as $key=>$val) {
+foreach ($image_fragments as $val) {
     imagecopy(
         $new_image, $val['identifier'],
         $dst_x, $dst_y,
@@ -116,6 +135,7 @@ foreach ($images_identifier as $key=>$val) {
     );
     imagedestroy($val['identifier']); // 释放关联内存
 
+    // 根据排列方式计算偏移值
     if ($layout == 'horizontal') {
         $dst_x += $val['size']['w'];
     } else {
