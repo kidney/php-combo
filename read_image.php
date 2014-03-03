@@ -1,16 +1,16 @@
 <?php
 /**
- * Í¼ÏñÎÄ¼þ¶ÁÈ¡
+ * å›¾åƒæ–‡ä»¶è¯»å–
  */
 
 /**
- * ÒýÈëÎÄ¼þ
+ * å¼•å…¥æ–‡ä»¶
  */
 $project_cfg_arr = require_once(G_COMBO_PATH.'config/image_project.conf.php');
 
 
 /**
- * ³õÊ¼»¯
+ * åˆå§‹åŒ–
  */
 $url_param = combo_unparam($request_uri_arr[3]);
 
@@ -19,16 +19,16 @@ if ($layout != 'horizontal') {
     $layout = 'vertical';
 }
 
-$image_fragments = array(); // Í¼ÏñËéÆ¬
-$new_image_max_width = 0; // »­°å×î´ó¿í¶È
-$new_image_max_height = 0; // »­°å×î´ó¸ß¶È
+$image_fragments = array(); // å›¾åƒç¢Žç‰‡
+$new_image_max_width = 0; // ç”»æ¿æœ€å¤§å®½åº¦
+$new_image_max_height = 0; // ç”»æ¿æœ€å¤§é«˜åº¦
 
 
 /**
- * Êý¾Ý´¦Àí
+ * æ•°æ®å¤„ç†
  */
 foreach ($files_arr as $key=>$temp_file_path) {
-    // »ñÈ¡ÎÄ¼þÀàÐÍ£¬¼ì²éÆäËûÎÄ¼þÊÇ·ñÒ»Ñù
+    // èŽ·å–æ–‡ä»¶ç±»åž‹ï¼Œæ£€æŸ¥å…¶ä»–æ–‡ä»¶æ˜¯å¦ä¸€æ ·
     if ($key > 0) {
         $tmp_file_extension = combo_get_file_extension($temp_file_path);
         if ($tmp_file_extension != $file_extension) {
@@ -36,7 +36,7 @@ foreach ($files_arr as $key=>$temp_file_path) {
         }
     }
 
-    if ($script_url) { // ÊÇ·ñÒÑÖ¸¶¨¸¸¼¶Ä¿Â¼
+    if ($script_url) { // æ˜¯å¦å·²æŒ‡å®šçˆ¶çº§ç›®å½•
         $temp_file_path = $script_url.$temp_file_path;
     }
 
@@ -45,7 +45,7 @@ foreach ($files_arr as $key=>$temp_file_path) {
         combo_echo_error_header(404);
     }
 
-    // µÚÒ»Î»½øÐÐÄ¿Â¼¶ÔÅä
+    // ç¬¬ä¸€ä½è¿›è¡Œç›®å½•å¯¹é…
     $temp_fragment_arr[0] = $project_cfg_arr[$temp_fragment_arr[0]]['path'];
     $temp_file_full_path = join('/', $temp_fragment_arr);
 
@@ -53,7 +53,7 @@ foreach ($files_arr as $key=>$temp_file_path) {
         case 'png':
             $image = imagecreatefrompng($temp_file_full_path);
 
-            // ÊÇ·ñÕæ²ÊÉ«Í¼Ïñ
+            // æ˜¯å¦çœŸå½©è‰²å›¾åƒ
             if (!isset($is_true_color)) {
                 $is_true_color = imageistruecolor($image);
             }
@@ -81,7 +81,7 @@ foreach ($files_arr as $key=>$temp_file_path) {
         'size' => array('w' => (int)$image_size[0], 'h' => (int)$image_size[1])
     );
 
-    // ÅÅÁÐ·½Ê½¼ÆËã»­°å×Ü¿í¸ß
+    // æŽ’åˆ—æ–¹å¼è®¡ç®—ç”»æ¿æ€»å®½é«˜
     if ($layout == 'horizontal') {
         if ((int)$image_size[1] > $new_image_max_height) {
             $new_image_max_height = (int)$image_size[1];
@@ -97,7 +97,7 @@ foreach ($files_arr as $key=>$temp_file_path) {
     $last_modified_time = max((int)$last_modified_time, filemtime($temp_file_full_path));
 }
 
-// ´´½¨»­°å
+// åˆ›å»ºç”»æ¿
 if ($is_true_color === false) {
     $new_image = imagecreate($new_image_max_width, $new_image_max_height);
 } else {
@@ -106,8 +106,8 @@ if ($is_true_color === false) {
 
 switch ($file_extension) {
     case 'png':
-        imagesavealpha($new_image, true); // ÉèÖÃ±£´æPNGÊ±±£ÁôÍ¸Ã÷Í¨µÀÐÅÏ¢
-        imagealphablending($new_image, false); // ¹Ø±Õ»ìºÏÄ£Ê½£¬ÒÔ±ãÍ¸Ã÷ÑÕÉ«ÄÜ¸²¸ÇÔ­»­²¼
+        imagesavealpha($new_image, true); // è®¾ç½®ä¿å­˜PNGæ—¶ä¿ç•™é€æ˜Žé€šé“ä¿¡æ¯
+        imagealphablending($new_image, false); // å…³é—­æ··åˆæ¨¡å¼ï¼Œä»¥ä¾¿é€æ˜Žé¢œè‰²èƒ½è¦†ç›–åŽŸç”»å¸ƒ
 
         $trans_colour = imagecolorallocatealpha($new_image, 0, 0, 0, 127);
         imagefill($new_image, 0, 0, $trans_colour);
@@ -133,9 +133,9 @@ foreach ($image_fragments as $val) {
         0, 0,
         $val['size']['w'], $val['size']['h']
     );
-    imagedestroy($val['identifier']); // ÊÍ·Å¹ØÁªÄÚ´æ
+    imagedestroy($val['identifier']); // é‡Šæ”¾å…³è”å†…å­˜
 
-    // ¸ù¾ÝÅÅÁÐ·½Ê½¼ÆËãÆ«ÒÆÖµ
+    // æ ¹æ®æŽ’åˆ—æ–¹å¼è®¡ç®—åç§»å€¼
     if ($layout == 'horizontal') {
         $dst_x += $val['size']['w'];
     } else {
@@ -144,7 +144,7 @@ foreach ($image_fragments as $val) {
 }
 
 
-// Êä³öÍ¼Ïñ
+// è¾“å‡ºå›¾åƒ
 ob_start();
 switch ($file_extension) {
     case 'png':
@@ -161,5 +161,5 @@ $contents = ob_get_contents();
 ob_end_clean();
 
 
-imagedestroy($new_image); // ÊÍ·Å¹ØÁªÄÚ´æ
+imagedestroy($new_image); // é‡Šæ”¾å…³è”å†…å­˜
 ?>
