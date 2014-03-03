@@ -1,25 +1,25 @@
 <?php
 /**
- * ÎÄ±¾ÎÄ¼þ¶ÁÈ¡
+ * æ–‡æœ¬æ–‡ä»¶è¯»å–
  */
 
 /**
- * ÒýÈëÎÄ¼þ
+ * å¼•å…¥æ–‡ä»¶
  */
 $config_file_name = ($file_extension == 'js') ? 'script' : 'css';
 $project_cfg_arr = require_once(G_COMBO_PATH.'config/'.$config_file_name.'_project.conf.php');
 
 
 /**
- * ³õÊ¼»¯
+ * åˆå§‹åŒ–
  */
 
 
 /**
- * Êý¾Ý´¦Àí
+ * æ•°æ®å¤„ç†
  */
 foreach ($files_arr as $key=>$temp_file_path) {
-    // »ñÈ¡ÎÄ¼þÀàÐÍ£¬¼ì²éÊÇ·ñÒ»Ñù
+    // èŽ·å–æ–‡ä»¶ç±»åž‹ï¼Œæ£€æŸ¥æ˜¯å¦ä¸€æ ·
     if ($key > 0) {
         $tmp_file_extension = combo_get_file_extension($temp_file_path);
         if ($tmp_file_extension != $file_extension) {
@@ -27,7 +27,7 @@ foreach ($files_arr as $key=>$temp_file_path) {
         }
     }
 
-    if ($script_url) { // ÊÇ·ñÒÑÖ¸¶¨¸¸¼¶Ä¿Â¼
+    if ($script_url) { // æ˜¯å¦å·²æŒ‡å®šçˆ¶çº§ç›®å½•
         $temp_file_path = $script_url.$temp_file_path;
     }
 
@@ -36,7 +36,7 @@ foreach ($files_arr as $key=>$temp_file_path) {
         combo_echo_error_header(404);
     }
 
-    // µÚÒ»Î»½øÐÐÄ¿Â¼¶ÔÅä
+    // ç¬¬ä¸€ä½è¿›è¡Œç›®å½•å¯¹é…
     $temp_fragment_arr[0] = $project_cfg_arr[$temp_fragment_arr[0]]['path'];
     $temp_file_full_path = join('/', $temp_fragment_arr);
 
@@ -49,6 +49,6 @@ foreach ($files_arr as $key=>$temp_file_path) {
     $last_modified_time = max((int)$last_modified_time, filemtime($temp_file_full_path));
 }
 
-$contents = "/*! cache: ".date('Y-m-d H:i:s')." */\n"; // Ôö¼Ó¸öcacheµÄÊ±¼ä
+$contents = "/*! cache: ".date('Y-m-d H:i:s')." */\n"; // å¢žåŠ ä¸ªcacheçš„æ—¶é—´
 $contents .= join("\n", $result_arr);
 ?>
