@@ -1,21 +1,21 @@
 <?php
 /**
- * comboÎÄ¼ş¶ÁÈ¡
+ * comboæ–‡ä»¶è¯»å–
  */
 /**
- * ¶¨Òå³£Á¿
+ * å®šä¹‰å¸¸é‡
  */
 error_reporting(0);
 
 
 /**
- * ÒıÈëÎÄ¼ş
+ * å¼•å…¥æ–‡ä»¶
  */
 require_once('./combo_common.inc.php');
 
 
 /**
- * ³õÊ¼»¯
+ * åˆå§‹åŒ–
  */
 $G_HTTP_HEADER_CONTENT_TYPE_CFG = array(
     'js' => 'application/x-javascript',
@@ -28,26 +28,27 @@ $G_HTTP_HEADER_CONTENT_TYPE_CFG = array(
 
     'html' => 'text/html'
 );
-$G_CACHE_LIFE_CYCLE = 3600 * 24 * 365; // »º´æÉúÃüÖÜÆÚ
+$G_CACHE_LIFE_CYCLE = 3600 * 24 * 365; // ç¼“å­˜ç”Ÿå‘½å‘¨æœŸ
 
-$script_url = ltrim($_SERVER['SCRIPT_URL'], '/'); // ??Ç°
+$script_url = ltrim($_SERVER['SCRIPT_URL'], '/'); // ??å‰
 $request_uri = $_SERVER['REQUEST_URI'];
 
 if ($script_url == '' && $request_uri == '/') {
     combo_echo_error_header(403);
 }
 
-// ¹ıÂË·Ç·¨´«Èë
-if (preg_match('/[^a-zA-Z0-9\.\,\?\=\-\_\/~&]/', $request_uri)) {
+// è¿‡æ»¤éæ³•ä¼ å…¥
+// http://en.wikipedia.org/wiki/Query_string
+if (preg_match('/[^a-zA-Z0-9\/\?\.\+\-~_,=&%]/', $request_uri)) {
     combo_echo_error_header(404);
 }
 
 
 /**
- * Êı¾İ´¦Àí
+ * æ•°æ®å¤„ç†
  */
 /**
- * µ¥ÎÄ¼şÊ±, µØÖ·¸ñÊ½×ª»», Èç:
+ * å•æ–‡ä»¶æ—¶, åœ°å€æ ¼å¼è½¬æ¢, å¦‚:
  * http://example.com/utility/jquery/1.8.2/jquery.js
  *  =>
  * http://example.com/??utility/jquery/1.8.2/jquery.js
@@ -59,32 +60,32 @@ if (!strstr($request_uri, '??')) {
 
 $request_uri_arr = explode('?', $request_uri);
 
-// ¼ì²éÇëÇóÍ·ÊÇ·ñĞèÇóÑ¹Ëõ
+// æ£€æŸ¥è¯·æ±‚å¤´æ˜¯å¦éœ€æ±‚å‹ç¼©
 $http_accept_encoding = $_SERVER['HTTP_ACCEPT_ENCODING'];
 $gzip = strstr($http_accept_encoding, 'gzip');
 $deflate = strstr($http_accept_encoding, 'deflate');
 $encoding_type = $gzip ? 'gzip' : ($deflate ? 'deflate' : 'none');
 
 
-$files_arr = explode(',', $request_uri_arr[2]); // ²ğ·ÖÃ¿¸öÎÄ¼ş, ÏÂÃæÑ­»·¶ÁÈ¡
+$files_arr = explode(',', $request_uri_arr[2]); // æ‹†åˆ†æ¯ä¸ªæ–‡ä»¶, ä¸‹é¢å¾ªç¯è¯»å–
 
-// »ñÈ¡ÎÄ¼şÀàĞÍ
+// è·å–æ–‡ä»¶ç±»å‹
 $file_extension = combo_get_file_extension($files_arr[0]);
 
-// ½áÊø·Ç·¨µÄÎÄ¼şÀàĞÍ
+// ç»“æŸéæ³•çš„æ–‡ä»¶ç±»å‹
 if (!isset($G_HTTP_HEADER_CONTENT_TYPE_CFG[$file_extension])) {
     combo_echo_error_header(404);
 }
 
 $file_name_hash = md5($request_uri_arr[0].'??'.$request_uri_arr[2]);
-$file_ver_hash = md5($request_uri_arr[3]).'.'.$file_extension; // ÓĞÊ±¿ÉÄÜ»áÊÇnull
+$file_ver_hash = md5($request_uri_arr[3]).'.'.$file_extension; // æœ‰æ—¶å¯èƒ½ä¼šæ˜¯null
 
 $cache_file_full_path = G_FILE_CACHE_DIST_PATH.$file_name_hash.'/'.$file_ver_hash;
 $cache_filemtime = filemtime($cache_file_full_path);
 
-// ÎÄ¼ş´æÔÚ
+// æ–‡ä»¶å­˜åœ¨
 if ($cache_filemtime !== false) {
-    // ¿Í»§¶ËÒÑ»º´æ, Ö±½Ó·µ»Ø304
+    // å®¢æˆ·ç«¯å·²ç¼“å­˜, ç›´æ¥è¿”å›304
     if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) &&
         strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $cache_filemtime) {
 
@@ -95,7 +96,7 @@ if ($cache_filemtime !== false) {
         exit();
     }
 
-    // ¿Í»§¶ËÎŞ»º´æ, ¶ÁÈ¡ÄÚÈİ
+    // å®¢æˆ·ç«¯æ— ç¼“å­˜, è¯»å–å†…å®¹
     if ($fp = fopen($cache_file_full_path, 'rb')) {
         header('HTTP/1.0 200 OK');
         header('Cache-Control: max-age='.$G_CACHE_LIFE_CYCLE);
@@ -117,7 +118,7 @@ if ($cache_filemtime !== false) {
 }
 
 
-// Ã»ÓĞÕÒµ½ÎÄ¼ş, ÅÜ´´½¨Á÷³Ì
+// æ²¡æœ‰æ‰¾åˆ°æ–‡ä»¶, è·‘åˆ›å»ºæµç¨‹
 switch ($file_extension) {
     case 'js':
     case 'css':
@@ -149,12 +150,12 @@ if ($encoding_type != 'none') {
 echo $contents;
 //echo '/* '.$cache_file_full_path.' */'; // debug path
 
-// ÎÄ¼ş¼Ğ¼ì²é
+// æ–‡ä»¶å¤¹æ£€æŸ¥
 if (!is_dir(G_FILE_CACHE_DIST_PATH.$file_name_hash)) {
     mkdir(G_FILE_CACHE_DIST_PATH.$file_name_hash, 0777);
 }
 
-// Ğ´ÈëÎÄ¼ş²¢ÉèÖÃÎÄ¼şĞŞ¸ÄÊ±¼ä
+// å†™å…¥æ–‡ä»¶å¹¶è®¾ç½®æ–‡ä»¶ä¿®æ”¹æ—¶é—´
 if ($fp = fopen($cache_file_full_path, 'wb')) {
     fwrite($fp, $contents);
     fclose($fp);
